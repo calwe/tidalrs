@@ -5,6 +5,7 @@ mod artist;
 mod playlist;
 mod search;
 mod track;
+mod user;
 
 pub use album::*;
 pub use artist::*;
