@@ -9,6 +9,7 @@ mod user;
 
 pub use album::*;
 pub use artist::*;
+use bytes::Bytes;
 pub use playlist::*;
 pub use search::*;
 pub use track::*;

@@ -8,6 +8,8 @@ use crate::TIDAL_API_BASE_URL;
 use crate::TidalClient;
 use crate::artist::ArtistSummary;
 use crate::track::Track;
+use base64::prelude::BASE64_URL_SAFE;
+use base64::Engine;
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

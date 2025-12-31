@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use stream_download::storage::memory::MemoryStorageProvider;
 use stream_download::{Settings, StreamDownload};
+use log::error;
 
 /// Represents a track from the Tidal catalog.
 ///
@@ -108,6 +109,19 @@ struct SuggestedTrack {
     pub track: Track,
     /// Sources that suggested this track (e.g., "SUGGESTED_TRACKS")
     pub sources: Vec<String>,
+}
+
+/// The lyrics for a track
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Lyrics {
+    pub is_right_to_left: bool,
+    pub lyrics: String,
+    pub lyrics_provider: String,
+    pub provider_commontrack_id: String,
+    pub provider_lyrics_id: String,
+    pub subtitles: String,
+    pub track_id: u64,
 }
 
 impl TidalClient {
@@ -418,7 +432,7 @@ impl TidalClient {
         });
 
         let _: Value = self
-            .do_request(Method::POST, &url, Some(params), None)
+            .do_request(Method::GET, &url, Some(params), None)
             .await?;
 
         Ok(())
@@ -453,6 +467,23 @@ impl TidalClient {
             .await?;
 
         Ok(())
+    }
+
+    /// Get the lyrics for a track
+    pub async fn lyrics(&self, track_id: u64) -> Result<Lyrics, Error> {
+        let url = format!("{TIDAL_API_BASE_URL}/tracks/{track_id}/lyrics");
+
+        let params = serde_json::json!({
+            "countryCode": self.get_country_code(),
+            "locale": self.get_locale(),
+            "deviceType": self.get_device_type().as_ref(),
+        });
+
+        let lyrics: Lyrics = self
+            .do_request(Method::GET, &url, Some(params), None)
+            .await?;
+
+        Ok(lyrics)
     }
 }
 
